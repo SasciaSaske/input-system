@@ -420,7 +420,7 @@ Path signatures for native [Controllers](#controller) are:
 You must always specify at lest the class.
 
 ## Extra Binding Setup Tips
-You can also add [Control Activators](#control-activator) for individual [Controls](#control) and, in the case of [Composite Bindings](#binding), an additional [Composite Control Activator](#control-activator) for all currently active [Controls](#control).
+You can add [Control Activators](#control-activator) for individual [Controls](#control) and, in the case of [Composite Bindings](#binding), an additional [Composite Control Activator](#control-activator) for all currently active [Controls](#control).
 ```typescript
 // The binding will only listen for the Bottom Face Control of the Player One Controller
 const binding = new InputSingleBinding<boolean>()
@@ -519,6 +519,7 @@ binding.setCompositeControlActivator((controls) => controls[0].readValue() + con
 
 ## Create Custom Controller
 To create a custom [Controller](#controller), you just need to extend the `InputController` class, have a constructor with no parameter, and set it up through the `init` function to take advantage of the pooling capabilities of the system.
+
 Note that if you want to create a [Controller](#controller) of a particular category, you should derive your [Controller](#controller) from the base [Controller](#controller) of that category (for example, derive from `GamepadController` if you want to create a new type of gamepad).
 
 ## Create Custom Controls
