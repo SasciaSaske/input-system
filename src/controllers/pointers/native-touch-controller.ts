@@ -95,7 +95,6 @@ export class NativeTouchController extends TouchController {
         return this._activeTouches;
     }
 
-    /* @internal */
     public override init(eventTarget: GlobalEventHandlers, event: PointerEvent): void {
         const touch = this._getLazyTouch(0);
         touch.init(event);

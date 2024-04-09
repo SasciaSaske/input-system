@@ -65,7 +65,6 @@ export class NativeMouseController extends MouseController {
         return this._pointerData.active;
     }
 
-    /* @internal */
     public override init(eventTarget: GlobalEventHandlers, event: PointerEvent): void {
         this._pointerData.init(event);
 
