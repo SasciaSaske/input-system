@@ -1,0 +1,57 @@
+{
+    "name": "wle-input-system",
+    "version": "0.0.1",
+    "description": "An input system for Wonderland Engine that manages a wide range of input devices through a dedicated event-based system complemented by polling capabilities",
+    "author": "SasciaSaske",
+    "homepage": "https://github.com/SasciaSaske/input-system",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/SasciaSaske/input-system.git"
+    },
+    "type": "module",
+    "main": "dist/index.js",
+    "license": "MIT",
+    "keywords": [
+        "input",
+        "manager",
+        "controller",
+        "videogame",
+        "game",
+        "gamepad",
+        "keyboard",
+        "pointer",
+        "mouse",
+        "pen",
+        "touchscreen",
+        "touch",
+        "webxr",
+        "xr",
+        "vr",
+        "ar",
+        "sensor",
+        "orientation",
+        "wle",
+        "wonderland",
+        "wonderlandengine"
+    ],
+    "files": [
+        "dist/"
+    ],
+    "scripts": {
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.24",
+        "eslint": "^8.57.0",
+        "typescript": "^5.3.3",
+        "typescript-eslint": "^7.1.0"
+    },
+    "dependencies": {
+        "@types/webxr": "^0.5.14",
+        "input-system": "^0.0.2"
+    },
+    "peerDependencies": {
+        "@wonderlandengine/api": "^1.1.5"
+    },
+    "wonderlandengine": {}
+}

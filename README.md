@@ -1,5 +1,5 @@
 # Input System
-This is an easy-to-use and easily extendable [Input System](#input-system) capable of managing various types of input devices through a dedicated event-based system complemented by polling capabilites.
+This is an easy-to-use and easily extendable [Input System](#input-system) capable of managing various types of input devices through a dedicated event-based system complemented by polling capabilities.
 
 ## Customization
 You can extend the system by writing your own [Controllers](#controller), [Controls](#control), [Control Activators](#control-activator), [Modifiers](#modifier) and [Triggers](#trigger) using the provided classes and interfaces.
