@@ -1,7 +1,7 @@
 {
     "name": "input-system",
     "version": "0.0.1",
-    "description": "An input system that manages a wide range of input devices through a dedicated event-based system complemented by polling capabilites",
+    "description": "An input system that manages a wide range of input devices through a dedicated event-based system complemented by polling capabilities",
     "author": "SasciaSaske",
     "homepage": "https://github.com/SasciaSaske/input-system",
     "repository": {
