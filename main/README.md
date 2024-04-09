@@ -1,5 +1,5 @@
-# Wonderland Engine Input System
-This is an easy-to-use and easily extendable [Input System](#input-system) for [Wonderland Engine](https://wonderlandengine.com/) capable of managing various types of input devices through a dedicated event-based system complemented by polling capabilities.
+# Input System
+This is an easy-to-use and easily extendable [Input System](#input-system) capable of managing various types of input devices through a dedicated event-based system complemented by polling capabilities.
 
 ## Customization
 You can extend the system by writing your own [Controllers](#controller), [Controls](#control), [Control Activators](#control-activator), [Modifiers](#modifier) and [Triggers](#trigger) using the provided classes and interfaces.
@@ -132,23 +132,22 @@ When assigned to a [Binding](#binding), it will overwrite the [Action](#action)'
 # Usage
 
 ## Installation
-You can import the [WLE Input System](#input-system) to your project through npm using the following command:
+You can import the [Input System](#input-system) to your project through npm using the following command:
 ```
-npm install wle-input-system
+npm install input-system
 ```
 
 ## Setup
-If you're a [Wonderland Engine](https://wonderlandengine.com/) user, you don't have to worry about setting up the [Input Manager](#input-manager). The `WLInputManager` class handles everything for you: it updates itself through the `onPreRender` event and manages all the XR functionality, supporting multi-engine and multi-scene setups.
-
-You can access the [Input Manager](#input-manager) from anywhere using:
+You can create the [Input Manager](#input-manager) by:
 ```typescript
-WLInputManager.get(engine);
-// or, if you don't need multi-engine support:
-WLInputManager.current;
+const inputManager = new InputManager();
 ```
-and set it up from the editor through the `input-manager-component` (keep in mind that if you're not using it, you should access the [Input Manager](#input-manager) by providing the current engine at least once to make it work).
+and update it with:
+```typescript
+inputManager.update(deltaTime);
+```
 
-You can also enable/disable each category of native [Controller](#controller) from its manager, which is accessible directly from the [Input Manager](#input-manager):
+You can enable/disable each category of native [Controller](#controller) from its manager, which is accessible directly from the [Input Manager](#input-manager):
 ```typescript
 // Pointers
 // For the pointers you can specify the event target of the PointerEvent
@@ -176,6 +175,37 @@ inputManager.sensor.accelerometer.native.enable()
 inputManager.sensor.linearAcceleration.native.enable()
 inputManager.sensor.gravity.native.enable()
 inputManager.sensor.gyroscope.native.enable()
+```
+
+For using WebXR related inputs, you need to call specific functions when starting or ending an `XRSession`:
+```typescript
+navigator.xr.requestSession('immersive-vr').then((session) => {
+    // Call this when XRSession starts
+    inputManager.xr.native.onSessionStart()
+    ...
+    session.addEventListener('end', ()=> {
+        // Call this when XRSession ends
+        inputManager.xr.native.onSessionEnd();
+        ...
+    });
+    ...
+});
+```
+And provide to the system an `XRContext` object that must be kept updated:
+```typescript
+// Assign your object that implements the XRContext interface to the input manager
+inputManager.xr.native.context = myXRContext;
+
+// Update it as you please
+xrSession.requestAnimationFrame((time, xrFrame) => {
+    myXRContext.update(xrFrame);
+    ...
+});
+```
+
+To access motion sensor data on iOS Devices, you must request browser permission through a user gesture. This can be done easily by providing an `HTMLElement` (like a button or the game's canvas) to this function:
+```typescript
+inputManager.sensor.orientation.native.requestPermissionOnElementClick(element);
 ```
 
 ## Read a value from a controller

@@ -211,14 +211,17 @@ inputManager.sensor.orientation.native.requestPermissionOnElementClick(element);
 ## Wonderland Engine Users
 If you're a [Wonderland Engine](https://wonderlandengine.com/) user, you don't have to worry about setting up the [Input Manager](#input-manager). The `WLInputManager` class handles everything for you: it updates itself through the `onPreRender` event and manages all the XR functionality, supporting multi-engine and multi-scene setups.
 
-You can access the [Input Manager](#input-manager) from anywhere using:
+You can import the [WLE Input System](#input-system) to your project through npm using the following command:
+```
+npm install wle-input-system
+```
+access the [Input Manager](#input-manager) from anywhere using:
 ```typescript
 WLInputManager.get(engine);
 // or, if you don't need multi-engine support:
 WLInputManager.current;
 ```
-
-Keep in mind that if you're not using the default `input-manager-component`, which serves just as a visual [Input Manager](#input-manager) initializer for the editor, you should access the [Input Manager](#input-manager) by providing the current engine at least once to make it work.
+and set it up from the editor through the `input-manager-component` (keep in mind that if you're not using it, you should access the Input Manager by providing the current engine at least once to make it work).
 
 ## Read a value from a controller
 In case you want to get the left `xr-gamepad` you're currently using, you can use:
