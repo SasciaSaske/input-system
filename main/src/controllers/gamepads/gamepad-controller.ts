@@ -1,6 +1,6 @@
 import { NumberControl, Vector2Control } from "../../controls/input-controls.js";
 import { GamepadButtonControl, GamepadDpadControl } from "../../controls/gamepad-controls.js";
-import { ReadonlyVector2 } from "../../helpers/vectors-helper.js";
+import { Vector2 } from "../../helpers/vectors-helper.js";
 import { InputManager } from "../../input-manager.js";
 import { InputController } from "../input-controller.js";
 import { GamepadHaptic, HapticController } from "../haptic-controller.js";
@@ -41,7 +41,7 @@ export interface GamepadControlMap {
     'centerSpecial': boolean,
     'centerSpecial/value': number,
 
-    'dpad': ReadonlyVector2,
+    'dpad': Vector2,
     'dpad/up': boolean,
     'dpad/up/value': number,
     'dpad/down': boolean,
@@ -51,10 +51,10 @@ export interface GamepadControlMap {
     'dpad/right': boolean,
     'dpad/right/value': number,
 
-    'leftStick': ReadonlyVector2,
+    'leftStick': Vector2,
     'leftStick/x': number,
     'leftStick/y': number,
-    'rightStick': ReadonlyVector2,
+    'rightStick': Vector2,
     'rightStick/x': number,
     'rightStick/y': number
 }

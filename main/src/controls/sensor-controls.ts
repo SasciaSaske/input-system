@@ -6,7 +6,7 @@ import { PropertyStateControl } from "./property-based-controls.js";
 
 export const degToRad = Math.PI / 180;
 
-export class DeviceRotationControl extends BaseInputControl<ReadonlyVector4> {
+export class DeviceRotationControl extends BaseInputControl<Vector4> {
     protected override _isState = true;
     private _orientationData: OrientationEventWrapper;
     private _value = new Vector4();

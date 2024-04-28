@@ -102,7 +102,7 @@ export abstract class InputBinding<TValue> {
     private _applyModifiers(value: TValue): TValue {
         if (this._modifiers) {
             for (let i = 0; i < this._modifiers.length; i++) {
-                value = this._modifiers[i].apply(value);
+                value = this._modifiers[i].execute(value);
             }
         }
         return value;
@@ -114,8 +114,8 @@ export abstract class InputBinding<TValue> {
     }
 
     /* @internal */
-    public setConverter(converter: unknown, ...args: unknown[]): this;
-    public setConverter(converter: unknown, arg0: unknown, arg1: unknown, arg2: unknown): this { //! temp
+    public setConverter(converter: unknown, ...args: unknown[]): InputBinding<TValue>;
+    public setConverter(converter: unknown, arg0: unknown, arg1: unknown, arg2: unknown): InputBinding<TValue> { //! temp
         if (typeof converter === 'string') {
             converter = Converter[converter as keyof typeof Converter](arg0 as number, arg1 as number | undefined, arg2 as number | undefined);
         } else if (typeof converter === 'function') {
@@ -126,15 +126,16 @@ export abstract class InputBinding<TValue> {
     }
 
     /* @internal */
-    public abstract setConverterAsControlActivator(converter: unknown, ...args: unknown[]): this;
+    public abstract setConverterAsControlActivator(converter: unknown, ...args: unknown[]): InputBinding<boolean>;
 
+    public addModifier<T extends TValue>(modifier: InputModifier<T> | ((value: T) => T)): InputBinding<T>;
     public addModifier<T extends KeyOfExtendsType<typeof Modifier, (...args: unknown[]) => InputModifier<TValue>>>(
-        modifier: InputModifier<TValue> | ((value: TValue) => TValue) | T, arg0?: Parameters<typeof Modifier[T]>[0], arg1?: Parameters<typeof Modifier[T]>[1]): this {
+        modifier: InputModifier<TValue> | ((value: TValue) => TValue) | T, arg0?: Parameters<typeof Modifier[T]>[0], arg1?: Parameters<typeof Modifier[T]>[1]): InputBinding<TValue> {
         this._modifiers ??= [];
         if (typeof modifier === 'string') {
             modifier = Modifier[modifier](arg0!, arg1!) as InputModifier<TValue>;
         } else if (typeof modifier === 'function') {
-            modifier = { apply: modifier };
+            modifier = { execute: modifier };
         }
         this._modifiers.push(modifier);
         return this;
@@ -158,7 +159,7 @@ export abstract class InputBinding<TValue> {
             if (typeof modifier === 'string') {
                 modifier = Modifier[modifier](arg0!, arg1!) as InputModifier<TValue>;
             } else if (typeof modifier === 'function') {
-                modifier = { apply: modifier };
+                modifier = { execute: modifier };
             }
             this._modifiers[index] = modifier;
             return true;
@@ -168,12 +169,12 @@ export abstract class InputBinding<TValue> {
 
     public setTrigger<T extends KeyOfExtendsType<typeof Trigger, (...args: unknown[]) => InputTrigger<TValue>>>(
         trigger: InputTrigger<TValue> | ((value: TValue, deltaTime?: number) => boolean) | T,
-        arg0?: Parameters<typeof Trigger[T]>[0], arg1?: Parameters<typeof Trigger[T]>[1], arg2?: Parameters<typeof Trigger[T]>[2]): this {
+        arg0?: Parameters<typeof Trigger[T]>[0], arg1?: Parameters<typeof Trigger[T]>[1], arg2?: Parameters<typeof Trigger[T]>[2]): InputBinding<TValue> {
         if (typeof trigger === 'string') {
             trigger = Trigger[trigger](arg0 as number, arg1 as number | undefined, arg2 as number | undefined) as InputTrigger<TValue>;
             trigger.reset?.();
         } else if (typeof trigger === 'function') {
-            trigger = { apply: trigger } as InputTrigger<TValue>;
+            trigger = { execute: trigger } as InputTrigger<TValue>;
         } else {
             trigger.reset?.();
         }

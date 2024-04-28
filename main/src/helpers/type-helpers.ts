@@ -3,7 +3,7 @@
 export type KeyOfType<TObject, TKey> = keyof TObject & keyof { [K in keyof TObject as TObject[K] extends TKey ? K : never]: any }
 export type KeyOfExtendsType<TObject, TKey> = keyof TObject & keyof { [K in keyof TObject as TKey extends TObject[K] ? K : never]: any }
 
-export type IndexOfType<T extends Tuple> = Exclude<Partial<T>['length'], T['length']> & number;
+export type IndexOfType<T extends Tuple> = number extends T['length'] ? number : Exclude<Partial<T>['length'], T['length']> & number;
 
 export type AddPrefix<TObject, TPrefix extends string> = { [K in keyof TObject as K extends string ? `${TPrefix}${K}` : never]: TObject[K] }
 
@@ -39,3 +39,30 @@ export type AbstractConstructor<T = any> = abstract new (...args: any[]) => T;
 export function assertObjectOfType<T extends object>(value: any): value is T {
     return typeof value === 'object';
 }
+
+export type RemoveReadonly<T> = Readonly<any> extends T ? T extends Readonly<infer A> ? A : never : T extends readonly [...(infer A)] ? [...A] : T // narrowing fix
+
+export type TupleWithTypeAtIndex<TTuple extends Tuple, TIndex extends IndexOfType<TTuple>, TType> =
+    TTuple extends [..._MaxExtendableTupleHead<TTuple, TIndex>, ...infer R]
+    ? [..._SubtupleFromStartToIndex<TTuple, TIndex, TType>, ...R] extends [infer H, ...infer E]
+    ? [H, ...E] extends TTuple
+    ? [H, ...E]
+    : never
+    : never
+    : never
+
+type _MaxExtendableTupleHead<TTuple extends Tuple, TIndex extends number, TRest extends any[] = []> =
+    TTuple extends [any, ...TRest, ...any]
+    ? TRest['length'] extends TIndex
+    ? [any, ...TRest]
+    : _MaxExtendableTupleHead<TTuple, TIndex, [any, ...TRest]>
+    : TRest
+
+type _SubtupleFromStartToIndex<
+    TTuple extends Tuple,
+    TIndex extends number,
+    TType,
+    TRest extends any[] = []> =
+    TRest['length'] extends TIndex
+    ? [...TRest, TType]
+    : _SubtupleFromStartToIndex<TTuple, TIndex, TType, [...TRest, TTuple[TRest['length']]]>;

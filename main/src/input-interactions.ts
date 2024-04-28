@@ -14,7 +14,7 @@ export class HoldTrigger implements InputTrigger<boolean> {
         this._timer = 0;
     }
 
-    public apply(value: boolean, deltaTime: number): boolean {
+    public execute(value: boolean, deltaTime: number): boolean {
         if (value === true) {
             if (this._timer >= this.holdTime) {
                 return true;
@@ -40,7 +40,7 @@ export class TapTrigger implements InputTrigger<boolean> {
         this._timer = 0;
     }
 
-    public apply(value: boolean, deltaTime: number): boolean {
+    public execute(value: boolean, deltaTime: number): boolean {
         if (value === true) {
             this._timer += deltaTime;
             return false;
@@ -78,7 +78,7 @@ export class MultiTapTrigger implements InputTrigger<boolean> {
         this._timer = 0;
     }
 
-    public apply(value: boolean, deltaTime: number): boolean {
+    public execute(value: boolean, deltaTime: number): boolean {
         if (this._count === 0) {
             if (value === true) {
                 this._lastValue = true;
@@ -119,7 +119,7 @@ export class MultiTapTrigger implements InputTrigger<boolean> {
 }
 
 export const ALL_TRUE_CONVERTER: InputConverter<ArrayLike<boolean>, boolean> = {
-    apply(values: ArrayLike<boolean>): boolean {
+    execute(values: ArrayLike<boolean>): boolean {
         for (let i = 0; i < values.length; i++) {
             if (values[i] === false) {
                 return false;
@@ -148,7 +148,7 @@ export class SequenceCompositeInteraction<T extends ArrayLike<boolean>> implemen
         this._timer = 0;
     }
 
-    public apply(values: T, deltaTime: number): boolean {
+    public execute(values: T, deltaTime: number): boolean {
         if (this._count === 0) {
             if (values[0] === true) {
                 this._lastValue = true;

@@ -7,7 +7,7 @@ export interface InputControl<T> {
     getPath(): string;
     isState(): boolean;
     isActivated(): boolean;
-    readValue(): T;
+    readValue(): Readonly<T>;
 }
 
 export interface BooleanControl extends InputControl<boolean> {
@@ -18,17 +18,17 @@ export interface NumberControl extends InputControl<number> {
     readValue(): number;
 }
 
-export interface Vector2Control extends InputControl<ReadonlyVector2> {
+export interface Vector2Control extends InputControl<Vector2> {
     get x(): NumberControl;
     get y(): NumberControl;
     readValue(): ReadonlyVector2;
 }
-export interface Vector3Control extends InputControl<ReadonlyVector3> {
+export interface Vector3Control extends InputControl<Vector3> {
     get x(): NumberControl;
     get y(): NumberControl;
     get z(): NumberControl;
 }
-export interface Vector4Control extends InputControl<ReadonlyVector4> {
+export interface Vector4Control extends InputControl<Vector4> {
     get x(): NumberControl;
     get y(): NumberControl;
     get z(): NumberControl;
@@ -71,7 +71,7 @@ export abstract class IndexInputControl<T> extends BaseInputControl<T> {
     }
 }
 
-export abstract class BaseVector2Control extends BaseInputControl<ReadonlyVector2> {
+export abstract class BaseVector2Control extends BaseInputControl<Vector2> {
     protected _value = new Vector2();
     public readonly x: NumberControl;
     public readonly y: NumberControl;
@@ -102,7 +102,7 @@ export class Vector2GenericControl extends BaseVector2Control {
     }
 }
 
-export abstract class BaseVector3Control extends BaseInputControl<ReadonlyVector3> {
+export abstract class BaseVector3Control extends BaseInputControl<Vector3> {
     protected _value = new Vector3();
     public readonly x: NumberControl;
     public readonly y: NumberControl;
@@ -136,7 +136,7 @@ export class Vector3GenericControl extends BaseVector3Control {
     }
 }
 
-export abstract class BaseVector4Control extends BaseInputControl<ReadonlyVector4> {
+export abstract class BaseVector4Control extends BaseInputControl<Vector4> {
     protected _value = new Vector4();
     public readonly x: NumberControl;
     public readonly y: NumberControl;

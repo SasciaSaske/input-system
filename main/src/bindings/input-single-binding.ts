@@ -1,4 +1,4 @@
-import { InputControllerMap } from "../controllers/input-maps.js";
+import { InputControlMap, InputControllerMap } from "../controllers/input-maps.js";
 import { InputController } from "../controllers/input-controller.js";
 import { InputControl } from "../controls/input-controls.js";
 import { removeAtIndex } from "../helpers/array-helper.js";
@@ -78,15 +78,15 @@ class BaseInputSingleBinding<TControl, TValue = TControl> extends InputBinding<T
     }
 
     protected _readRawValue(): TValue {
-        return this._converter ? this._converter.apply(this._boundControls![0].readValue()) : this._boundControls![0].readValue() as unknown as TValue;
+        return this._converter ? this._converter.execute(this._boundControls![0].readValue()) : this._boundControls![0].readValue() as unknown as TValue;
     }
 
     public setPath<
         ControllerPath extends keyof InputControllerMap,
         ControlPath extends KeyOfExtendsType<InputControllerMap[ControllerPath], TControl>>
-        (arg0: ControllerPath | string, arg1?: ControlPath | string): this {
+        (arg0: ControllerPath | string, arg1?: ControlPath | string): BaseInputSingleBinding<TControl, TControl extends TValue ? TControl : TValue> {
         this._pathSetup(arg0, arg1 as string);
-        return this;
+        return this as BaseInputSingleBinding<TControl, TControl extends TValue ? TControl : TValue>;
     }
 
     private _pathSetup(a: string, b?: string): void {
@@ -100,8 +100,9 @@ class BaseInputSingleBinding<TControl, TValue = TControl> extends InputBinding<T
         }
     }
 
+
     public setControlActivator<T extends KeyOfExtendsType<typeof ControlActivator, (...args: unknown[]) => InputControlActivator<TControl>>>(
-        activator: InputControlActivator<TControl> | ((control: InputControl<TControl>) => boolean) | T, arg0?: Parameters<typeof ControlActivator[T]>[0]): this {
+        activator: InputControlActivator<TControl> | ((control: InputControl<TControl>) => boolean) | T, arg0?: Parameters<typeof ControlActivator[T]>[0]): BaseInputSingleBinding<TControl, TValue> {
         if (typeof activator === 'string') {
             activator = ControlActivator[activator](arg0 as InputController & number);
         } else if (typeof activator === 'function') {
@@ -133,39 +134,95 @@ class BaseInputSingleBinding<TControl, TValue = TControl> extends InputBinding<T
         return this._boundControls?.[0] as InputControl<T> ?? null;
     }
 
-    public setConverterAsControlActivator(converter: unknown, ...args: unknown[]): this {
+    public setConverterAsControlActivator(converter: unknown, ...args: unknown[]): BaseInputSingleBinding<TControl, boolean> {
         this.setConverter(converter, args);
         const converterActivator = new ConverterToControlActivator(this._converter as InputConverter<TControl, boolean>);
         this._activator = converterActivator;
         this._converter = converterActivator as unknown as InputConverter<TControl, TValue>;
-        return this;
+        return this as unknown as BaseInputSingleBinding<TControl, boolean>;
     }
 }
 
 export interface InputSingleBinding<TControl, TValue = TControl> extends BaseInputSingleBinding<TControl, TValue> {
     setPath<
-        ControllerPath extends keyof InputControllerMap,
-        ControlPath extends KeyOfExtendsType<InputControllerMap[ControllerPath], TControl>>
-        (controller: ControllerPath, control: ControlPath): this;
-    setPath(path: string): this;
-    setPath(controller: string, control: string): this;
+        TControllerPath extends keyof InputControllerMap,
+        TControlPath extends KeyOfExtendsType<InputControllerMap[TControllerPath], TControl> & keyof InputControlMap,
+        T extends InputControlMap[TControlPath]>
+        (controller: TControllerPath, control: TControlPath):
+        InputSingleBinding<T, T extends TValue ? T : TValue>;
+    setPath<TControllerPath extends string,
+        TControlPath extends TControllerPath extends keyof InputControllerMap ?
+        KeyOfExtendsType<InputControllerMap[TControllerPath], TControl> & keyof InputControlMap
+        : keyof InputControlMap | string,
+        T extends TControlPath extends keyof InputControlMap ? InputControlMap[TControlPath] : TControl>
+        (controller: TControllerPath, control: TControlPath):
+        InputSingleBinding<T, T extends TValue ? T : TValue>;
+    setPath(path: string):
+        InputSingleBinding<TControl, TControl extends TValue ? TControl : TValue>;
 
     setConverter<T extends KeyOfExtendsType<typeof Converter, (...args: unknown[]) => InputConverter<TControl, TValue>>>(
-        ...args: TValue extends TControl
+        ...args:
+            unknown extends TControl
+            ? [converter: T, ...args: Parameters<typeof Converter[T]>]
+            : unknown extends TValue
+            ? [converter: T, ...args: Parameters<typeof Converter[T]>]
+            : TValue extends TControl
+            ? [converter: never]
+            : [converter: T, ...args: Parameters<typeof Converter[T]>]):
+        ReturnType<typeof Converter[T]> extends InputConverter<infer C, infer V>
+        ? InputSingleBinding<C extends TControl ? C : TControl, V extends TValue ? V : TValue>
+        : never;
+    setConverter<C extends TControl, V extends TValue>(
+        ...args:
+            unknown extends TControl
+            ? [converter: InputConverter<C, V> | ((value: C) => V)]
+            : unknown extends TValue
+            ? [converter: InputConverter<C, V> | ((value: C) => V)]
+            : TValue extends TControl
             ? [converter: never]
             : TValue extends boolean
-            ? [converter: InputConverter<TControl, boolean> | ((value: TControl) => boolean)] | [converter: T, ...args: Parameters<typeof Converter[T]>]
-            : [converter: InputConverter<TControl, TValue> | ((value: TControl) => TValue)] | [converter: T, ...args: Parameters<typeof Converter[T]>]): this;
+            ? [converter: InputConverter<C, boolean> | ((value: C) => boolean)]
+            : [converter: InputConverter<C, V> | ((value: C) => V)]):
+        InputSingleBinding<C, V>;
+
+    setConverterAsControlActivator<T extends KeyOfExtendsType<typeof Converter, (...args: unknown[]) => InputConverter<TControl, boolean>>>(
+        ...args:
+            unknown extends TValue
+            ? [converter: T, ...args: Parameters<typeof Converter[T]>]
+            : TValue extends TControl
+            ? [converter: never]
+            : TValue extends boolean
+            ? [converter: T, ...args: Parameters<typeof Converter[T]>]
+            : [converter: never]):
+        ReturnType<typeof Converter[T]> extends InputConverter<infer C, boolean>
+        ? InputSingleBinding<C extends TControl ? C : TControl, boolean>
+        : never;
+    setConverterAsControlActivator<T extends TControl>(
+        ...args:
+            unknown extends TValue
+            ? [converter: InputConverter<T, boolean> | ((value: T) => boolean)]
+            : TValue extends TControl
+            ? [converter: never]
+            : TValue extends boolean
+            ? [converter: InputConverter<T, boolean> | ((value: T) => boolean)]
+            : [converter: never]):
+        InputSingleBinding<T, boolean>;
+
     setConverterAsControlActivator<T extends KeyOfExtendsType<typeof Converter, (...args: unknown[]) => InputConverter<TControl, boolean>>>(
         ...args: TValue extends TControl
-            ? [converter: never]
+            ? unknown extends TControl
+            ? [converter: InputConverter<TControl, boolean> | ((value: TControl) => boolean)] | [converter: T, ...args: Parameters<typeof Converter[T]>]
+            : [converter: never]
             : TValue extends boolean
             ? [converter: InputConverter<TControl, boolean> | ((value: TControl) => boolean)] | [converter: T, ...args: Parameters<typeof Converter[T]>]
-            : [converter: never]): this;
+            : [converter: never]): InputSingleBinding<TControl, boolean>;
 
     addModifier<T extends KeyOfExtendsType<typeof Modifier, (...args: unknown[]) => InputModifier<TValue>>>(
-        modifier: T, ...args: Parameters<typeof Modifier[T]>): this;
-    addModifier(modifier: InputModifier<TValue> | ((value: TValue) => TValue)): this;
+        modifier: T, ...args: Parameters<typeof Modifier[T]>):
+        InputSingleBinding<TControl, ReturnType<typeof Modifier[T]> extends InputModifier<infer Type> ? Type : TValue>;
+    addModifier<T extends TValue>(modifier: InputModifier<T> | ((value: T) => T)):
+        InputSingleBinding<TControl, T extends TValue ? T : TValue>;
+
     removeModifier(index: number): boolean;
     getModifier<T extends InputModifier<TValue>>(index: number): T | null;
     replaceModifier<T extends KeyOfExtendsType<typeof Modifier, (...args: unknown[]) => InputModifier<TValue>>>(
@@ -173,15 +230,20 @@ export interface InputSingleBinding<TControl, TValue = TControl> extends BaseInp
     replaceModifier(index: number, modifier: InputModifier<TValue> | ((value: TValue) => TValue)): boolean;
 
     setTrigger<T extends KeyOfExtendsType<typeof Trigger, (...args: unknown[]) => InputTrigger<TValue>>>(
-        trigger: T, ...args: Parameters<typeof Trigger[T]>): this
-    setTrigger(trigger: InputTrigger<TValue> | ((value: TValue, deltaTime?: number) => boolean)): this;
-    getTrigger<T extends InputTrigger<TValue>>(): T | null;
+        trigger: T, ...args: Parameters<typeof Trigger[T]>):
+        InputSingleBinding<TControl, ReturnType<typeof Trigger[T]> extends InputModifier<infer Type extends TValue> ? Type : TValue>;
+    setTrigger<T extends TValue>(trigger: InputTrigger<T> | ((value: T, deltaTime?: number) => boolean)):
+        InputSingleBinding<TControl, T extends TValue ? T : TValue>;
 
+    getTrigger<T extends InputTrigger<TValue>>(): T | null;
 
     setControlActivator<T extends KeyOfExtendsType<typeof ControlActivator, (...args: unknown[]) => InputControlActivator<TControl>>>(
         activator: T,
-        ...args: Parameters<typeof ControlActivator[T]>): this;
-    setControlActivator(activator: InputControlActivator<TControl> | ((control: InputControl<TControl>) => boolean)): this;
+        ...args: Parameters<typeof ControlActivator[T]>):
+        InputSingleBinding<ReturnType<typeof ControlActivator[T]> extends InputControlActivator<infer Type> ? Type : TControl, TValue>;
+    setControlActivator<T extends TControl>(activator: InputControlActivator<T> | ((control: InputControl<T>) => boolean)):
+        InputSingleBinding<T, TValue>;
+
     removeControlActivator(): void;
     getControlActivator(): InputControlActivator<TControl> | null;
 
@@ -193,7 +255,7 @@ interface UnconvertedInputSingleBinding<TControl, TValue = TControl> extends
 
 export const InputSingleBinding = BaseInputSingleBinding as
     {
-        new <TControl, TValue = TControl>(): TValue extends TControl
+        new <TControl = any, TValue = TControl>(): TValue extends TControl
             ? InputSingleBinding<TControl, WidenAsTuple<TValue>>
             : UnconvertedInputSingleBinding<TControl, WidenAsTuple<TValue>>;
     };

@@ -97,6 +97,6 @@ export class Vector4 implements ArrayLike<number> {
     public set 3(value: number) { this.w = value; }
 }
 
-export interface ReadonlyVector2 extends Readonly<Vector2> { }
-export interface ReadonlyVector3 extends Readonly<Vector3> { }
-export interface ReadonlyVector4 extends Readonly<Vector4> { }
+export type ReadonlyVector2 = Readonly<Vector2>;
+export type ReadonlyVector3 = Readonly<Vector3>;
+export type ReadonlyVector4 = Readonly<Vector4>;

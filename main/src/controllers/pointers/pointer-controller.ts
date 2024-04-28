@@ -1,6 +1,6 @@
 import { BooleanControl, Vector2Control } from "../../controls/input-controls.js";
 import { InputManager } from "../../input-manager.js";
-import { ReadonlyVector2 } from "../../helpers/vectors-helper.js";
+import { Vector2 } from "../../helpers/vectors-helper.js";
 import { InputController } from "../input-controller.js";
 declare module "../input-maps.js" {
     export interface InputControllerMap {
@@ -13,10 +13,10 @@ declare module "../input-maps.js" {
 
 export interface PointerControlMap {
     'selectButton': boolean,
-    'position': ReadonlyVector2,
+    'position': Vector2,
     'position/x': number,
     'position/y': number,
-    'deltaPosition': ReadonlyVector2,
+    'deltaPosition': Vector2,
     'deltaPosition/x': number,
     'deltaPosition/y': number,
 }

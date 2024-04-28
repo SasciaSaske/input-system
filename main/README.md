@@ -515,3 +515,14 @@ The same applies to [Controls](#control). While there are already many versatile
 
 ## More To Come
 The actual documentation will be released in the future, and this is just a basic overview of the system's usage. Keep in mind that this is still a beta, and there may be substantial changes in the future.
+
+## Changelog
+**0.0.3**
+- Added self type definition while building [Bindings](#binding).
+- Renamed the main method in [Converter](#converter), [Modifier](#modifier) and [Trigger](#trigger) from `apply` to `execute` to avoid conflicts with the `Function.prototype.apply()` method in certain function overloads.
+- Removed the `readonly` modifier from the native [Controls](#control) generic types and type maps.
+- Fixed [Action](#action)'s inferred generic type by removing the redundant `readonly` modifier when a readonly type is given as default. Also, addressed the potential redundancy of the `readonly` modifier in the `readValue` return type.
+- Fixed dependencies in the package.json.
+
+## Funding
+If you find this tool useful and plan to use it in your projects, please consider supporting its development by making a donation [here](https://paypal.me/sasciasaske). A contribution is really appreciated!

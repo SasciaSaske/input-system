@@ -14,7 +14,7 @@ export interface GamepadTouchButtonControl extends GamepadButtonControl {
     get touched(): BooleanControl;
 }
 
-export interface GamepadDpadControl extends InputControl<ReadonlyVector2> {
+export interface GamepadDpadControl extends InputControl<Vector2> {
     get up(): GamepadButtonControl
     get down(): GamepadButtonControl
     get left(): GamepadButtonControl
@@ -134,7 +134,7 @@ export class GamepadAPIAxisControl extends IndexInputControl<number> {
     }
 }
 
-export abstract class BaseGamepadDpadControl extends BaseInputControl<ReadonlyVector2> implements GamepadDpadControl {
+export abstract class BaseGamepadDpadControl extends BaseInputControl<Vector2> implements GamepadDpadControl {
     private _value = new Vector2();
     public abstract get up(): GamepadButtonControl;
     public abstract get down(): GamepadButtonControl;
@@ -187,7 +187,7 @@ export class CustomGamepadDpadControl extends BaseGamepadDpadControl {
     }
 }
 
-export class GamepadAPIAxesControl extends BaseInputControl<ReadonlyVector2> {
+export class GamepadAPIAxesControl extends BaseInputControl<Vector2> {
     private _IndexX: number;
     private _IndexY: number;
     private _value = new Vector2();

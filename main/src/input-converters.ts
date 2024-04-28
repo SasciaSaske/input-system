@@ -5,25 +5,25 @@ import { ALL_TRUE_CONVERTER } from "./input-interactions.js";
 import { InputModifier, Modifier } from "./input-modifiers.js";
 
 export interface InputConverter<TInput, TOutput> {
-    apply(value: TInput): TOutput;
+    execute(value: TInput): TOutput;
 }
 
-export class AdvancedInputConverter<TInput, TOutput> implements InputConverter<TInput, TOutput>{
+export class AdvancedInputConverter<TInput, TOutput> implements InputConverter<TInput, TOutput> {
     private _converter: InputConverter<TInput, TOutput>;
     private _modifiers: InputModifier<TInput>[] = [];
 
     constructor(converter: InputConverter<TInput, TOutput> | ((value: TInput) => TOutput)) {
         if (typeof converter === 'function') {
-            converter = { apply: converter };
+            converter = { execute: converter };
         }
         this._converter = converter;
     }
 
-    public apply(value: TInput): TOutput {
+    public execute(value: TInput): TOutput {
         for (let i = 0; i < this._modifiers.length; i++) {
-            value = this._modifiers[i].apply(value);
+            value = this._modifiers[i].execute(value);
         }
-        return this._converter.apply(value);
+        return this._converter.execute(value);
     }
 
     public addPreConverterModifier<T extends KeyOfExtendsType<typeof Modifier, (...args: unknown[]) => InputModifier<TInput>>>(modifier: T, ...args: Parameters<typeof Modifier[T]>): this;
@@ -34,7 +34,7 @@ export class AdvancedInputConverter<TInput, TOutput> implements InputConverter<T
         if (typeof modifier === 'string') {
             modifier = Modifier[modifier](arg0!, arg1!) as InputModifier<TInput>;
         } else if (typeof modifier === 'function') {
-            modifier = { apply: modifier };
+            modifier = { execute: modifier };
         }
         this._modifiers.push(modifier);
         return this;
@@ -61,7 +61,7 @@ export class AdvancedInputConverter<TInput, TOutput> implements InputConverter<T
             if (typeof modifier === 'string') {
                 modifier = Modifier[modifier](arg0!, arg1!) as InputModifier<TInput>;
             } else if (typeof modifier === 'function') {
-                modifier = { apply: modifier };
+                modifier = { execute: modifier };
             }
             this._modifiers[index] = modifier;
             return true;
@@ -71,10 +71,10 @@ export class AdvancedInputConverter<TInput, TOutput> implements InputConverter<T
 }
 
 export const TO_TRUE: InputConverter<unknown, boolean> = {
-    apply: function (): boolean { return true; }
+    execute: function (): boolean { return true; }
 };
 export const TO_FALSE: InputConverter<unknown, boolean> = {
-    apply: function (): boolean { return false; }
+    execute: function (): boolean { return false; }
 };
 
 // Comparison
@@ -83,47 +83,47 @@ export abstract class ComparisonConverter<T> implements InputConverter<T, boolea
     public constructor(value: T) {
         this.value = value;
     }
-    public abstract apply(value: T): boolean;
+    public abstract execute(value: T): boolean;
 }
 
 export class EqualConverter extends ComparisonConverter<number> {
-    public apply(value: number): boolean {
+    public execute(value: number): boolean {
         return value === this.value;
     }
 }
 
 export class NotEqualConverter extends ComparisonConverter<number> {
-    public apply(value: number): boolean {
+    public execute(value: number): boolean {
         return value !== this.value;
     }
 }
 
 export class GreaterThanConverter extends ComparisonConverter<number> {
-    public apply(value: number): boolean {
+    public execute(value: number): boolean {
         return value > this.value;
     }
 }
 
 export class LessThanConverter extends ComparisonConverter<number> {
-    public apply(value: number): boolean {
+    public execute(value: number): boolean {
         return value < this.value;
     }
 }
 
 export class GreaterThanOrEqualConverter extends ComparisonConverter<number> {
-    public apply(value: number): boolean {
+    public execute(value: number): boolean {
         return value >= this.value;
     }
 }
 
-export class LessThanOrEqualConverter extends ComparisonConverter<number>  {
-    public apply(value: number): boolean {
+export class LessThanOrEqualConverter extends ComparisonConverter<number> {
+    public execute(value: number): boolean {
         return value <= this.value;
     }
 }
 
 export const NUMBERS_TO_AXIS_CONVERTER: InputConverter<[number | boolean, number | boolean], number> = {
-    apply(values: [number | boolean, number | boolean]): number {
+    execute(values: [number | boolean, number | boolean]): number {
         return (values[1] as number) - (values[0] as number);
     }
 };
@@ -131,7 +131,7 @@ export const NUMBERS_TO_AXIS_CONVERTER: InputConverter<[number | boolean, number
 export class Vector2CompositeConverter implements InputConverter<[number | boolean, number | boolean, number | boolean, number | boolean], Vector2> {
     private _cachedValues!: Vector2;
 
-    public apply(values: [number | boolean, number | boolean, number | boolean, number | boolean]): Vector2 {
+    public execute(values: [number | boolean, number | boolean, number | boolean, number | boolean]): Vector2 {
         this._cachedValues ??= new Vector2;
         this._cachedValues.x = (values[1] as number) - (values[0] as number);
         this._cachedValues.y = (values[3] as number) - (values[2] as number);
@@ -140,7 +140,7 @@ export class Vector2CompositeConverter implements InputConverter<[number | boole
 }
 
 export const VECTOR_TO_MAGNITUDE_CONVERTER: InputConverter<ArrayLike<number>, number> = {
-    apply(value: ArrayLike<number>): number {
+    execute(value: ArrayLike<number>): number {
         let squaredMagnitude = 0;
         for (let i = 0; i < value.length; i++) {
             squaredMagnitude += value[i] * value[i];
@@ -154,7 +154,7 @@ export const VECTOR_TO_MAGNITUDE_CONVERTER: InputConverter<ArrayLike<number>, nu
 export class ArrayToVector2 implements InputConverter<[number | boolean, number | boolean], Vector2> {
     private _cachedValues!: Vector2;
 
-    public apply(values: [number | boolean, number | boolean]): Vector2 {
+    public execute(values: [number | boolean, number | boolean]): Vector2 {
         this._cachedValues ??= new Vector2;
         this._cachedValues.x = values[0] as number;
         this._cachedValues.y = values[1] as number;
@@ -164,7 +164,7 @@ export class ArrayToVector2 implements InputConverter<[number | boolean, number 
 export class ArrayToVector3 implements InputConverter<[number | boolean, number | boolean, number | boolean], Vector3> {
     private _cachedValues!: Vector3;
 
-    public apply(values: [number | boolean, number | boolean, number | boolean]): Vector3 {
+    public execute(values: [number | boolean, number | boolean, number | boolean]): Vector3 {
         this._cachedValues ??= new Vector3;
         this._cachedValues.x = values[0] as number;
         this._cachedValues.y = values[1] as number;
@@ -185,7 +185,7 @@ export class DistanceLessThanOrEqualConverter<T extends [Vector3, Vector3]> impl
         this.secondIndex = secondIndex;
     }
 
-    public apply(values: T): boolean {
+    public execute(values: T): boolean {
         this._cachedVector ??= new Float32Array(3);
         this._cachedVector[0] = values[this.firstIndex].x - values[this.secondIndex].x;
         this._cachedVector[1] = values[this.firstIndex].y - values[this.secondIndex].y;
@@ -207,7 +207,7 @@ export class DistanceGreaterThanOrEqualConverter<T extends [Vector3, Vector3]> i
         this.secondIndex = secondIndex;
     }
 
-    public apply(values: T): boolean {
+    public execute(values: T): boolean {
         this._cachedVector ??= new Float32Array(3);
         this._cachedVector[0] = values[this.firstIndex].x - values[this.secondIndex].x;
         this._cachedVector[1] = values[this.firstIndex].y - values[this.secondIndex].y;

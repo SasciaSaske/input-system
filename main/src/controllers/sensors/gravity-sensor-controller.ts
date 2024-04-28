@@ -1,5 +1,5 @@
 import { Vector3Control } from "../../controls/input-controls.js";
-import { ReadonlyVector3 } from "../../helpers/vectors-helper.js";
+import { Vector3 } from "../../helpers/vectors-helper.js";
 import { InputManager } from "../../input-manager.js";
 import { InputController } from "../input-controller.js";
 
@@ -13,7 +13,7 @@ declare module "../input-maps.js" {
 }
 
 export interface GravitySensorControlMap {
-    'gravity': ReadonlyVector3,
+    'gravity': Vector3,
     'gravity/x': number,
     'gravity/y': number,
     'gravity/z': number,

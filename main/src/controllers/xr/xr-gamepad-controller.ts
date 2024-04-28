@@ -3,7 +3,7 @@ import { NumberControl, Vector2Control } from "../../controls/input-controls.js"
 import { GamepadTouchButtonControl } from "../../controls/gamepad-controls.js";
 import { PoseControl } from "../../controls/xr-controls.js";
 import { AddPrefix } from "../../helpers/type-helpers.js";
-import { ReadonlyVector2 } from "../../helpers/vectors-helper.js";
+import { Vector2 } from "../../helpers/vectors-helper.js";
 import { InputManager } from "../../input-manager.js";
 import { InputPath } from "../../input-path.js";
 import "../input-maps.js";
@@ -150,10 +150,10 @@ export interface XRGamepadControlMap extends XRControlMap {
     'secondaryButton/value': number,
     'secondaryButton/touched': number,
 
-    'touchpad': ReadonlyVector2,
+    'touchpad': Vector2,
     'touchpad/x': number,
     'touchpad/y': number,
-    'thumbstick': ReadonlyVector2,
+    'thumbstick': Vector2,
     'thumbstick/x': number,
     'thumbstick/y': number
 }

@@ -3,7 +3,7 @@ import { InputController } from "../controllers/input-controller.js";
 import { InputControl } from "../controls/input-controls.js";
 import { insertAtIndex, lastElement, moveElementToIndex, moveFromIndexToIndex, removeAtIndex, removeElement } from "../helpers/array-helper.js";
 import { EventHandlerTwoParameters } from "../helpers/event-handler.js";
-import { KeyOfExtendsType, Primitive, RecursiveArrayLike, Tuple, WidenAsTuple } from "../helpers/type-helpers.js";
+import { KeyOfExtendsType, Primitive, RecursiveArrayLike, RemoveReadonly, Tuple, WidenAsTuple } from "../helpers/type-helpers.js";
 import { InputManager } from "../input-manager.js";
 import { InputModifier, Modifier } from "../input-modifiers.js";
 import { DefaultPrimitiveTriggerInputConverter, DefaultTriggerInputConverter, InputTrigger, Trigger } from "../input-trigger.js";
@@ -69,12 +69,12 @@ class BaseInputAction<TValue> extends InputActionModule {
         }
     }
 
-    public readDefaultValue(): TValue extends Readonly<unknown> ? TValue : Readonly<TValue> {
-        return this._defaultValue as TValue extends Readonly<unknown> ? TValue : Readonly<TValue>;
+    public readDefaultValue(): Readonly<any> extends TValue ? TValue : Readonly<TValue> {
+        return this._defaultValue;
     }
 
-    public readValue(): TValue extends Readonly<unknown> ? TValue : Readonly<TValue> {
-        return this._value as TValue extends Readonly<unknown> ? TValue : Readonly<TValue>;
+    public readValue(): Readonly<any> extends TValue ? TValue : Readonly<TValue> {
+        return this._value;
     }
 
     /* @internal */
@@ -108,7 +108,7 @@ class BaseInputAction<TValue> extends InputActionModule {
                 this._value = binding._readValue();
                 if (this._modifiers) {
                     for (let i = 0; i < this._modifiers.length; i++) {
-                        this._value = this._modifiers[i].apply(this._value);
+                        this._value = this._modifiers[i].execute(this._value);
                     }
                 }
             } else {
@@ -116,7 +116,7 @@ class BaseInputAction<TValue> extends InputActionModule {
             }
         }
 
-        const triggered = this._currentTrigger.apply(this._value, this._inputManager!.deltaTime);
+        const triggered = this._currentTrigger.execute(this._value, this._inputManager!.deltaTime);
         switch (this._state) {
             case ('waiting'):
                 if (triggered === true) {
@@ -344,7 +344,7 @@ class BaseInputAction<TValue> extends InputActionModule {
         if (typeof modifier === 'string') {
             modifier = Modifier[modifier](arg0!, arg1!) as InputModifier<TValue>;
         } else if (typeof modifier === 'function') {
-            modifier = { apply: modifier };
+            modifier = { execute: modifier };
         }
         this._modifiers.push(modifier);
         return this;
@@ -368,7 +368,7 @@ class BaseInputAction<TValue> extends InputActionModule {
             if (typeof modifier === 'string') {
                 modifier = Modifier[modifier](arg0!, arg1!) as InputModifier<TValue>;
             } else if (typeof modifier === 'function') {
-                modifier = { apply: modifier };
+                modifier = { execute: modifier };
             }
             this._modifiers[index] = modifier;
             return true;
@@ -383,7 +383,7 @@ class BaseInputAction<TValue> extends InputActionModule {
             trigger = Trigger[trigger](arg0 as number, arg1 as number | undefined, arg2 as number | undefined) as InputTrigger<TValue>;
             trigger.reset?.();
         } else if (typeof trigger === 'function') {
-            trigger = { apply: trigger } as InputTrigger<TValue>;
+            trigger = { execute: trigger } as InputTrigger<TValue>;
         } else {
             trigger.reset?.();
         }
@@ -575,8 +575,8 @@ class BaseInputAction<TValue> extends InputActionModule {
 
 export interface InputAction<TValue> extends BaseInputAction<TValue>, InputActionModule {
     readonly state: InputActionState;
-    readDefaultValue(): TValue extends Readonly<unknown> ? TValue : Readonly<TValue>;
-    readValue(): TValue extends Readonly<unknown> ? TValue : Readonly<TValue>;
+    readDefaultValue(): Readonly<any> extends TValue ? TValue : Readonly<TValue>;
+    readValue(): Readonly<any> extends TValue ? TValue : Readonly<TValue>;
     addBinding(binding: InputBinding<TValue>): this;
     removeBinding(predicate: (binding: InputBinding<TValue>) => boolean): boolean;
     getBinding<T extends InputBinding<TValue>>(name: string): T | null;
@@ -612,11 +612,11 @@ export const InputAction = BaseInputAction as
         new <T extends Tuple>( //needed for tuple narrowing
             name: string, defaultValue: T
         ): T extends Primitive | RecursiveArrayLike<Primitive>
-            ? InputAction<WidenAsTuple<T>>
-            : UntriggerableInputAction<WidenAsTuple<T>>
+            ? InputAction<WidenAsTuple<RemoveReadonly<T>>>
+            : UntriggerableInputAction<WidenAsTuple<RemoveReadonly<T>>>
         new <T>(
             name: string, defaultValue: T
         ): T extends Primitive | RecursiveArrayLike<Primitive>
-            ? InputAction<WidenAsTuple<T>>
-            : UntriggerableInputAction<WidenAsTuple<T>>
+            ? InputAction<WidenAsTuple<RemoveReadonly<T>>>
+            : UntriggerableInputAction<WidenAsTuple<RemoveReadonly<T>>>
     };

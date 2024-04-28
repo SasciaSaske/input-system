@@ -1,5 +1,5 @@
 import { ViewControl } from "../../controls/xr-controls.js";
-import { ReadonlyVector3, ReadonlyVector4 } from "../../helpers/vectors-helper.js";
+import { Vector3, Vector4 } from "../../helpers/vectors-helper.js";
 import { InputManager } from "../../input-manager.js";
 import { XRViewerControlMap, XRViewerController } from "./xr-viewer-controller.js";
 declare module "../input-maps.js" {
@@ -13,22 +13,22 @@ declare module "../input-maps.js" {
 
 export interface XRHeadControlMap extends XRViewerControlMap {
     'leftEye': XRPose,
-    'leftEye/position': ReadonlyVector3,
+    'leftEye/position': Vector3,
     'leftEye/position/x': number,
     'leftEye/position/y': number,
     'leftEye/position/z': number,
-    'leftEye/rotation': ReadonlyVector4,
+    'leftEye/rotation': Vector4,
     'leftEye/rotation/x': number,
     'leftEye/rotation/y': number,
     'leftEye/rotation/z': number,
     'leftEye/rotation/w': number,
 
     'rightEye': XRPose,
-    'rightEye/position': ReadonlyVector3,
+    'rightEye/position': Vector3,
     'rightEye/position/x': number,
     'rightEye/position/y': number,
     'rightEye/position/z': number,
-    'rightEye/rotation': ReadonlyVector4,
+    'rightEye/rotation': Vector4,
     'rightEye/rotation/x': number,
     'rightEye/rotation/y': number,
     'rightEye/rotation/z': number,

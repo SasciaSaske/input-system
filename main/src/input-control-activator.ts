@@ -48,12 +48,12 @@ export class ConverterToControlActivator<T> implements InputConverter<T, boolean
         this._converter = converter;
     }
 
-    apply(): boolean {
+    execute(): boolean {
         return this._value;
     }
 
     public check(control: InputControl<T>): boolean {
-        this._value = this._converter.apply(control.readValue());
+        this._value = this._converter.execute(control.readValue());
         return this._value;
     }
 }
@@ -67,7 +67,7 @@ export class ConverterToCompositeControlActivator<T extends Tuple> implements In
         this._converter = converter;
     }
 
-    apply(): boolean {
+    execute(): boolean {
         return this._value;
     }
 
@@ -76,7 +76,7 @@ export class ConverterToCompositeControlActivator<T extends Tuple> implements In
         for (let i = 0; i < controls.length; i++) {
             this._cachedValued[i] = controls[i].readValue();
         }
-        this._value = this._converter.apply(this._cachedValued);
+        this._value = this._converter.execute(this._cachedValued);
         return this._value;
     }
 }
@@ -89,12 +89,12 @@ export class ModifierToControlActivator implements InputModifier<boolean>, Input
         this._modifier = modifier;
     }
 
-    apply(): boolean {
+    execute(): boolean {
         return this._value;
     }
 
     public check(control: InputControl<boolean>): boolean {
-        this._value = this._modifier.apply(control.readValue());
+        this._value = this._modifier.execute(control.readValue());
         return this._value;
     }
 }

@@ -1,23 +1,23 @@
 import { Vector2, Vector3 } from "./helpers/vectors-helper.js";
 
 export interface InputModifier<T> {
-    apply(value: T): T;
+    execute(value: T): T;
 }
 
 export const TOGGLE_MODIFIER: InputModifier<boolean> = {
-    apply(value: boolean): boolean {
+    execute(value: boolean): boolean {
         return !value;
     }
 };
 
 export const SIGN_MODIFIER: InputModifier<number> = {
-    apply(value: number): number {
+    execute(value: number): number {
         return Math.sign(value);
     }
 };
 
 export const ABSOLUTE_MODIFIER: InputModifier<number> = {
-    apply(value: number): number {
+    execute(value: number): number {
         return Math.abs(value);
     }
 };
@@ -29,20 +29,20 @@ export class ClampModifier implements InputModifier<number> {
         this._min = min;
         this._max = max;
     }
-    public apply(value: number): number {
+    public execute(value: number): number {
         return value < this._min ? this._min : value > this._max ? this._max : value;
     }
 }
 
 export const INVERT_MODIFIER: InputModifier<number> = {
-    apply(value: number): number {
+    execute(value: number): number {
         return -value;
     }
 };
 export class InvertVector2Modifier implements InputModifier<Vector2> {
     private _cachedValue!: Vector2;
 
-    public apply(value: Vector2): Vector2 {
+    public execute(value: Vector2): Vector2 {
         this._cachedValue ??= new Vector2;
         this._cachedValue.x = -value.x;
         this._cachedValue.y = -value.y;
@@ -52,7 +52,7 @@ export class InvertVector2Modifier implements InputModifier<Vector2> {
 export class InvertVector3Modifier implements InputModifier<Vector3> {
     private _cachedValue!: Vector3;
 
-    public apply(value: Vector3): Vector3 {
+    public execute(value: Vector3): Vector3 {
         this._cachedValue ??= new Vector3;
         this._cachedValue.x = -value.x;
         this._cachedValue.y = -value.y;
@@ -66,7 +66,7 @@ export class ScaleModifier implements InputModifier<number> {
     public constructor(multiplier: number) {
         this.multiplier = multiplier;
     }
-    public apply(value: number): number {
+    public execute(value: number): number {
         return value * this.multiplier;
     }
 }
@@ -77,7 +77,7 @@ export class ScaleVector2Modifier implements InputModifier<Vector2> {
     public constructor(multiplier: number) {
         this.multiplier = multiplier;
     }
-    public apply(value: Vector2): Vector2 {
+    public execute(value: Vector2): Vector2 {
         this._cachedValue ??= new Vector2;
         this._cachedValue.x = value.x * this.multiplier;
         this._cachedValue.y = value.y * this.multiplier;
@@ -91,7 +91,7 @@ export class ScaleVector3Modifier implements InputModifier<Vector3> {
     public constructor(multiplier: number) {
         this.multiplier = multiplier;
     }
-    public apply(value: Vector3): Vector3 {
+    public execute(value: Vector3): Vector3 {
         this._cachedValue ??= new Vector3;
         this._cachedValue.x = value.x * this.multiplier;
         this._cachedValue.y = value.y * this.multiplier;
@@ -107,7 +107,7 @@ export class NormalizeModifier implements InputModifier<number> {
         this._min = min;
         this._max = max;
     }
-    public apply(value: number): number {
+    public execute(value: number): number {
         return value < this._min ? 0 : value > this._max ? 1 : (value - this._min) / (this._max - this._min);
     }
 }
@@ -115,7 +115,7 @@ export class NormalizeModifier implements InputModifier<number> {
 export class NormalizeVector2Modifier implements InputModifier<Vector2> {
     private _cachedAxes!: Vector2;
 
-    public apply(value: Vector2): Vector2 {
+    public execute(value: Vector2): Vector2 {
         const squaredMagnitude = value.x * value.x + value.y * value.y;
         if (squaredMagnitude === 0) {
             return Vector2.zero;
@@ -129,7 +129,7 @@ export class NormalizeVector2Modifier implements InputModifier<Vector2> {
 export class NormalizeVector3Modifier implements InputModifier<Vector3> {
     private _cachedAxes!: Vector3;
 
-    public apply(value: Vector3): Vector3 {
+    public execute(value: Vector3): Vector3 {
         const squaredMagnitude = value.x * value.x + value.y * value.y + value.z * value.z;
         if (squaredMagnitude === 0) {
             return Vector3.zero;
@@ -151,7 +151,7 @@ export class AxisDeadZoneModifier implements InputModifier<number> {
         this.max = max;
     }
 
-    public apply(value: number): number {
+    public execute(value: number): number {
         const abs = Math.abs(value);
         if (abs < this.min) {
             return 0;
@@ -172,7 +172,7 @@ export class StickDeadZoneModifier implements InputModifier<Vector2> {
         this.min = min;
         this.max = max;
     }
-    public apply(axes: Vector2): Vector2 {
+    public execute(axes: Vector2): Vector2 {
         const squaredMagnitude = axes.x * axes.x + axes.y * axes.y;
         if (squaredMagnitude < this.min * this.min) {
             return Vector2.zero;

@@ -1,5 +1,5 @@
 import { BooleanControl, Vector2Control } from "../../controls/input-controls.js";
-import { ReadonlyVector2 } from "../../helpers/vectors-helper.js";
+import { Vector2 } from "../../helpers/vectors-helper.js";
 import { InputManager } from "../../input-manager.js";
 import { PointerControlMap, PointerController } from "./pointer-controller.js";
 declare module "../input-maps.js" {
@@ -18,7 +18,7 @@ export interface MouseControlMap extends PointerControlMap {
     'backButton': boolean,
     'forwardButton': boolean,
 
-    'wheel': ReadonlyVector2,
+    'wheel': Vector2,
     'wheel/x': number,
     'wheel/y': number,
 }

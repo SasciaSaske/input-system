@@ -7,7 +7,7 @@ import { InputModifier, Modifier, TOGGLE_MODIFIER } from "./input-modifiers.js";
 
 export interface InputTrigger<T> {
     reset?(): void;
-    apply(value: T, deltaTime?: number): boolean;
+    execute(value: T, deltaTime?: number): boolean;
 }
 
 export class DefaultPrimitiveTriggerInputConverter<T extends Primitive> implements InputTrigger<T> {
@@ -17,7 +17,7 @@ export class DefaultPrimitiveTriggerInputConverter<T extends Primitive> implemen
         this._defaultValue = defaultValue;
     }
 
-    public apply(value: T): boolean {
+    public execute(value: T): boolean {
         return value !== this._defaultValue;
     }
 }
@@ -29,7 +29,7 @@ export class DefaultTriggerInputConverter<T extends RecursiveArrayLike<Primitive
         this._defaultValue = defaultValue;
     }
 
-    public apply(value: T): boolean {
+    public execute(value: T): boolean {
         return !this._equals(value, this._defaultValue);
     }
 
@@ -46,7 +46,7 @@ export class DefaultTriggerInputConverter<T extends RecursiveArrayLike<Primitive
     }
 }
 
-class BaseAdvancedInputTrigger<TValue, TTrigger> implements InputTrigger<TValue>{
+class BaseAdvancedInputTrigger<TValue, TTrigger> implements InputTrigger<TValue> {
     private _converter: InputConverter<TValue, TTrigger> | null = null;
     private _modifiers: InputModifier<TTrigger>[] | null = null;
     private _trigger!: InputTrigger<TTrigger>;
@@ -62,14 +62,14 @@ class BaseAdvancedInputTrigger<TValue, TTrigger> implements InputTrigger<TValue>
         this.reset = this._trigger.reset;
     }
 
-    public apply(value: TValue, deltaTime: number): boolean {
-        let triggerValue = this._converter?.apply(value) ?? value as unknown as TTrigger;
+    public execute(value: TValue, deltaTime: number): boolean {
+        let triggerValue = this._converter?.execute(value) ?? value as unknown as TTrigger;
         if (this._modifiers) {
             for (let i = 0; i < this._modifiers.length; i++) {
-                triggerValue = this._modifiers[i].apply(triggerValue);
+                triggerValue = this._modifiers[i].execute(triggerValue);
             }
         }
-        return this._trigger.apply(triggerValue, deltaTime);
+        return this._trigger.execute(triggerValue, deltaTime);
     }
 
     /* @internal */
@@ -90,7 +90,7 @@ class BaseAdvancedInputTrigger<TValue, TTrigger> implements InputTrigger<TValue>
         if (typeof modifier === 'string') {
             modifier = Modifier[modifier](arg0!, arg1!) as InputModifier<TTrigger>;
         } else if (typeof modifier === 'function') {
-            modifier = { apply: modifier };
+            modifier = { execute: modifier };
         }
         this._modifiers.push(modifier);
         return this;
@@ -114,7 +114,7 @@ class BaseAdvancedInputTrigger<TValue, TTrigger> implements InputTrigger<TValue>
             if (typeof modifier === 'string') {
                 modifier = Modifier[modifier](arg0!, arg1!) as InputModifier<TTrigger>;
             } else if (typeof modifier === 'function') {
-                modifier = { apply: modifier };
+                modifier = { execute: modifier };
             }
             this._modifiers[index] = modifier;
             return true;
@@ -129,7 +129,7 @@ class BaseAdvancedInputTrigger<TValue, TTrigger> implements InputTrigger<TValue>
             trigger = Trigger[trigger](arg0 as number, arg1 as number | undefined, arg2 as number | undefined) as InputTrigger<TTrigger>;
             trigger.reset?.();
         } else if (typeof trigger === 'function') {
-            trigger = { apply: trigger } as InputTrigger<TTrigger>;
+            trigger = { execute: trigger } as InputTrigger<TTrigger>;
         } else {
             trigger.reset?.();
         }

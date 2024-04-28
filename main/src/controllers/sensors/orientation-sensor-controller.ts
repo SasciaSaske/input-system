@@ -1,5 +1,5 @@
 import { Vector3Control, Vector4Control } from "../../controls/input-controls.js";
-import { ReadonlyVector3 } from "../../helpers/vectors-helper.js";
+import { Vector3 } from "../../helpers/vectors-helper.js";
 import { InputManager } from "../../input-manager.js";
 import { InputController } from "../input-controller.js";
 
@@ -13,12 +13,12 @@ declare module "../input-maps.js" {
 }
 
 export interface OrientationSensorControlMap {
-    'rotation': ReadonlyVector3,
+    'rotation': Vector3,
     'rotation/x': number,
     'rotation/y': number,
     'rotation/z': number,
     'rotation/w': number,
-    'degRotation': ReadonlyVector3,
+    'degRotation': Vector3,
     'degRotation/x': number,
     'degRotation/y': number,
     'degRotation/z': number,

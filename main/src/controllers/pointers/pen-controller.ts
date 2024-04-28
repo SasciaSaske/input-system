@@ -1,5 +1,5 @@
 import { BooleanControl, NumberControl, Vector2Control } from "../../controls/input-controls.js";
-import { ReadonlyVector2 } from "../../helpers/vectors-helper.js";
+import { Vector2 } from "../../helpers/vectors-helper.js";
 import { InputManager } from "../../input-manager.js";
 import { PointerControlMap, PointerController } from "./pointer-controller.js";
 declare module "../input-maps.js" {
@@ -14,7 +14,7 @@ declare module "../input-maps.js" {
 export interface PenControlMap extends PointerControlMap {
     'tip': boolean,
     'pressure': number,
-    'tilt': ReadonlyVector2,
+    'tilt': Vector2,
     'tilt/x': number,
     'tilt/y': number,
     'twist': number,

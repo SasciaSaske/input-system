@@ -18,7 +18,7 @@ export class UpdatableButtonControl extends BaseInputControl<boolean> implements
     }
 }
 
-export class DeltaPixelEventControl extends BaseInputControl<ReadonlyVector2> {
+export class DeltaPixelEventControl extends BaseInputControl<Vector2> {
     protected _rawAxes = new Vector2();
     protected _axes = new Vector2();
     public readonly x: NumberControl;
