@@ -282,8 +282,8 @@ const subActions = baseActions.addActionGroup(new InputActionGroup('subActions')
 
 Than, you can finally add the [Action](#action):
 ```typescript
-// When creating the Action, you have to provide a default value from which it will define its type.
-const moveAction = new InputAction('move', Vector2.zero); // returns an InputAction<Vector2>
+// When creating the Action, you have to provide a default value from which it will define its type
+const moveAction = new InputAction('move', Vector2.zero); // Returns an InputAction<Vector2>
 baseActions.addAction(moveAction);
 ```
 
@@ -291,25 +291,47 @@ Now you can create a [Binding](#binding), so that the [Action](#action) knows fr
 
 If you want to bind the left gamepad stick with a deadzone you can:
 ```typescript
-// When creating the Binding you have to specify the control and the returning type (one is enough if they are the same)
+// When creating the Binding you can specify the control and the returning type (one is enough if they are the same)
 const moveGamepadBinding = new InputSingleBinding<Vector2>('gamepad-stick')
     // Set the path of the controller and the one of the control
-    .setPath('gamepad', 'leftStick')
+    .setPath('gamepad', 'leftStick') // Only the controls with the matching type are suggested and allowed
     // Add the deadzone modifier
-    .addModifier('stickDeadZone', 0.2, 0.9);
+    .addModifier('stickDeadZone', 0.2, 0.9); // Only the modifiers witht he matching types are suggested and allowed
+
+// Or you can omit the types and let the Binding define them by itself
+const moveGamepadBinding = new InputSingleBinding('gamepad-stick')
+    .setPath('gamepad', 'leftStick') // All available controls are suggested
+    // Since the assigned control is a InputControl<Vector2>, the Binding is now a InputSingleBinding<Vector2>
+    .addModifier('stickDeadZone', 0.2, 0.9); // Only the modifiers with the matching types are suggested and allowed
 ```
 
-If you want to bind a direction vector from the WASD keys of the keyboard, you can check for the key values with a [Composite Binding](#binding) and transform them in a two dimensional vector through a `compositeVector2` [Converter](#converter):
+If you want to bind a direction vector from the WASD keys of the keyboard, you can check for the key values with a [Composite Binding](#binding) and transform them in a two dimensional vector through a `compositeVector2` [Converter](#converter).
+Remember to assign the [Converter](#converter) first before proceeding:
 ```typescript
-// When creating a Composite Binding you have to specify the controls types as a Tuple
+// When creating a Composite Binding you can specify the controls types as a Tuple
 const moveKeyboardBinding = new InputCompositeBinding<[boolean, boolean, boolean, boolean], Vector2>()
-    // When the control and the returning types are not equal, you have to assing a converter
-    .setConverter('compositeVector2')
+    // When the control and the returning types are not equal, you have to assing a converter first
+    .setConverter('compositeVector2') // Only converters from [boolean, boolean, boolean, boolean] to Vector2 are suggested
     // Set the path of the correspoding index
-    .setPath(0, 'keyboard', 'keyA')
-    .setPath(1, 'keyboard', 'keyD')
-    .setPath(2, 'keyboard', 'keyW')
-    .setPath(3, 'keyboard', 'keyS');
+    .setPath(0, 'keyboard', 'keyA') // Only boolean based Controls are suggested
+    .setPath(1, 'keyboard', 'keyD') // Only boolean based Controls are suggested
+    .setPath(2, 'keyboard', 'keyW') // Only boolean based Controls are suggested
+    .setPath(3, 'keyboard', 'keyS'); // Only boolean based Controls are suggested
+
+// Or you can omit the types and let the Binding define them automatically
+const moveKeyboardBinding = new InputCompositeBinding()
+    // When omitting the types, you must assing the converter befor setting the paths
+    .setConverter('compositeVector2') // All available controls are suggested
+    // Based on the assigned Converter, the Binding becomes an InputConverter<[number | boolean, number | boolean, number | boolean, number | boolean], Vector2>
+    // Whenever a more specific type is assigned, the Binding type adjusts itself
+    .setPath(0, 'keyboard', 'keyA') // Only number and boolean based Controls are suggested
+    // Returns InputConverter<[boolean, number | boolean, number | boolean, number | boolean], Vector2>
+    .setPath(1, 'keyboard', 'keyD') // Only number and boolean based Controls are suggested
+    // Returns InputConverter<[boolean, boolean, number | boolean, number | boolean], Vector2>
+    .setPath(2, 'keyboard', 'keyW') // Only number and boolean based Controls are suggested
+    // Returns InputConverter<[boolean, boolean, boolean, number | boolean], Vector2>
+    .setPath(3, 'keyboard', 'keyS'); // Only number and boolean based Controls are suggested
+    // Returns InputConverter<[boolean, boolean, boolean, boolean], Vector2>
 ```
 
 To add a [Binding](#binding) to an action:
@@ -335,15 +357,15 @@ For simplicity and readability purpose, all the methods can be chainded together
 ```typescript
 inputManager.getActionGroup('player')
     .addAction(new InputAction('move', Vector2.zero)
-        .addBinding(new InputSingleBinding<Vector2>()
+        .addBinding(new InputSingleBinding()
             .setPath('gamepad', 'leftStick')
             .addModifier('stickDeadZone'))
-        .addBinding(new InputSingleBinding<Vector2>()
+        .addBinding(new InputSingleBinding()
             .setPath('gamepad', 'dpad'))
-        .addBinding(new InputSingleBinding<Vector2>()
+        .addBinding(new InputSingleBinding()
             .setPath('left/xr-gamepad', 'thumbstick')
             .addModifier('stickDeadZone'))
-        .addBinding(new InputCompositeBinding<[boolean, boolean, boolean, boolean], Vector2>()
+        .addBinding(new InputCompositeBinding()
             .setConverter('compositeVector2')
             .setPath(0, 'keyboard', 'keyA')
             .setPath(1, 'keyboard', 'keyD')
@@ -356,7 +378,7 @@ inputManager.getActionGroup('player')
         }));
 ```
 
-Thanks to the typed nature of the system, all the possible combination are suggested to you in the setup phase.
+Thanks to the typed nature of the system, all the possible combination are suggested to you in the setup phase, even in javascript.
 
 Take note that you can activate, deactivate, create, remove, assign and modify everything in the order you want and even in the middle of the gameplay with multiple connected [Controllers](#controller).
 
@@ -405,7 +427,7 @@ Path signatures for native [Controllers](#controller) are:
 - The `class` for the [Sensors](#control)
 *(e.g. `orientation-sensor`)*
 
-You must always specify at lest the class.
+You must always specify at least the class.
 
 ## Extra Binding Setup Tips
 You can add [Control Activators](#control-activator) for individual [Controls](#control) and, in the case of [Composite Bindings](#binding), an additional [Composite Control Activator](#control-activator) for all currently active [Controls](#control).
@@ -492,7 +514,7 @@ baseActions.pause();
 baseActions.resume();
 ```
 
-## Create Custom Converterters, Modifiers, Triggers and Control Activators
+## Create Custom Converters, Modifiers, Triggers and Control Activators
 You can create custom [Converters](#converter), [Modifiers](#modifier), [Triggers](#trigger), and [Control Activators](#control-activator) by implementing the respective interfaces: `InputConverter`, `InputModifier`, `InputTrigger`, `InputControlActivator` or `InputCompositeControlActivator`.
 Depending on the main method signature types, these components can be interchangeable.
 
@@ -518,7 +540,7 @@ The actual documentation will be released in the future, and this is just a basi
 
 ## Changelog
 **0.0.3**
-- Added self type definition while building [Bindings](#binding).
+- Added self type definition while building [Bindings](#binding) (check it out [here](#setup-an-action)).
 - Renamed the main method in [Converter](#converter), [Modifier](#modifier) and [Trigger](#trigger) from `apply` to `execute` to avoid conflicts with the `Function.prototype.apply()` method in certain function overloads.
 - Removed the `readonly` modifier from the native [Controls](#control) generic types and type maps.
 - Fixed [Action](#action)'s inferred generic type by removing the redundant `readonly` modifier when a readonly type is given as default. Also, addressed the potential redundancy of the `readonly` modifier in the `readValue` return type.

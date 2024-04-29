@@ -555,7 +555,7 @@ The actual documentation will be released in the future, and this is just a basi
 
 ## Changelog
 **0.0.3**
-- Added self type definition while building [Bindings](#binding).
+- Added self type definition while building [Bindings](#binding) (check it out [here](#setup-an-action)).
 - Renamed the main method in [Converter](#converter), [Modifier](#modifier) and [Trigger](#trigger) from `apply` to `execute` to avoid conflicts with the `Function.prototype.apply()` method in certain function overloads.
 - Removed the `readonly` modifier from the native [Controls](#control) generic types and type maps.
 - Fixed [Action](#action)'s inferred generic type by removing the redundant `readonly` modifier when a readonly type is given as default. Also, addressed the potential redundancy of the `readonly` modifier in the `readValue` return type.
