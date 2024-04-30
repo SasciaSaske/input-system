@@ -1,6 +1,6 @@
 {
     "name": "wle-input-system",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "An input system for Wonderland Engine that manages a wide range of input devices through a dedicated event-based system complemented by polling capabilities",
     "author": "SasciaSaske",
     "homepage": "https://github.com/SasciaSaske/input-system",
@@ -47,7 +47,7 @@
         "typescript-eslint": "^7.1.0"
     },
     "peerDependencies": {
-        "input-system": "^0.0.3",
+        "input-system": "^0.0.4",
         "@wonderlandengine/api": "^1.1.5"
     },
     "wonderlandengine": {}

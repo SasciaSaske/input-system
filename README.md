@@ -432,7 +432,7 @@ Path signatures for native [Controllers](#controller) are:
 - The `class` for the [Keyboard](#control)
 *(e.g. `keyboard`)*
 - The `class/mapping/model` for the [Gamepads](#control)
-*(native mappings are `standard` and `nonstandard`, while native models hanno la signature vendor-model sotto forma di id o string per i controller microsoft, sony e nintendo e.g. `gamepad/standard/microsoft-xinput`, `gamepad/standard/046d-c260`)*
+*(native mappings are `standard` and `nonstandard`, while native models have the signature `vendor-model` in the form of an ID or string (for Microsoft, Sony, and Nintendo controllers) e.g. `gamepad/standard/microsoft-xinput`, `gamepad/standard/046d-c260`)*
 - The `class/type` for the XR [Viewers](#control)
 *(native types are `head`, `screen` e.g. `xr-viewer/head`)*
 - The `handedness/class/mapping/model` for the [XR Gamepads](#control)
@@ -560,6 +560,10 @@ The actual documentation will be released in the future, and this is just a basi
 - Removed the `readonly` modifier from the native [Controls](#control) generic types and type maps.
 - Fixed [Action](#action)'s inferred generic type by removing the redundant `readonly` modifier when a readonly type is given as default. Also, addressed the potential redundancy of the `readonly` modifier in the `readValue` return type.
 - Fixed dependencies in the package.json.
+
+**0.0.4**
+- Fixed the `SetConverter` method of the [Bindings](#binding) when a function is set as parameter.
+- Readme fixes.
 
 ## Funding
 If you find this tool useful and plan to use it in your projects, please consider supporting its development by making a donation [here](https://paypal.me/sasciasaske). A contribution is really appreciated!

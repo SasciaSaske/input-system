@@ -78,7 +78,7 @@ class BaseAdvancedInputTrigger<TValue, TTrigger> implements InputTrigger<TValue>
         if (typeof converter === 'string') {
             converter = Converter[converter as keyof typeof Converter](arg0 as number, arg1 as number | undefined, arg2 as number | undefined);
         } else if (typeof converter === 'function') {
-            converter = { apply: converter };
+            converter = { execute: converter };
         }
         this._converter = converter as InputConverter<TValue, TTrigger>;
         return this;
