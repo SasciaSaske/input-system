@@ -47,7 +47,7 @@
         "typescript-eslint": "^7.1.0"
     },
     "peerDependencies": {
-        "input-system": "^0.0.4",
+        "input-system": "^0.0.x",
         "@wonderlandengine/api": "^1.1.5"
     },
     "wonderlandengine": {}
